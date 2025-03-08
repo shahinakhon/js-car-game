@@ -16,7 +16,7 @@ let player = {
 let keys = {
     ArrowUp: false,
     ArrowDown: false,
-    AroowRight: false,
+    ArrowRight: false,
     ArrowLeft: false,
     Space: false,
 };
@@ -27,7 +27,7 @@ let enemies =[];
 let car;
 
 // Event listeners for start button and key presses
-startBtn.addEventListener("click", () => startBtn(1));
+startBtn.addEventListener("click", () => start(1));
 document.addEventListener("keydown", pressOn);
 document.addEventListener("keyup", pressOff);
 
@@ -111,10 +111,10 @@ function playGame() {
     if (keys.ArrowDown && player.y < road.bottom) {
       player.y += player.speed;
     }
-    if (keys.ArrowLeft && player.x > 0) {
+    if (keys.ArrowLeft && player.x >  20) { // Prevent moving over left edge
       player.x -= player.speed;
     }
-    if (keys.ArrowRight && player.x < road.width - 50) {
+    if (keys.ArrowRight && player.x < road.width - car.offsetWidth - 20) { // Prevent moving over right edge
       player.x += player.speed;
     }
 
@@ -156,6 +156,15 @@ function start(level) {
   player.speed = 5 + (level - 1) * 2;
   player.score = 0;
   
+  // Add edges to the game area
+  const leftEdge = document.createElement("div");
+  leftEdge.classList.add("edge", "left");
+  gameArea.appendChild(leftEdge);
+
+  const rightEdge = document.createElement("div");
+  rightEdge.classList.add("edge", "right");
+  gameArea.appendChild(rightEdge);
+  
   // Create and position lines on the game screen
   for (let x = 0; x < 10; x++) {
     let div = document.createElement("div");
@@ -170,8 +179,10 @@ function start(level) {
   car = document.createElement("div");
   car.setAttribute("class", "car");
   gameArea.appendChild(car);
-  player.x = car.offsetLeft;
-  player.y = car.offsetTop;
+  player.x = (gameArea.offsetWidth / 2) - (car.offsetWidth / 2); // Center the car horizontally
+  player.y = gameArea.offsetHeight - car.offsetHeight - 50; // Position the car near the bottom
+  car.style.left = `${player.x}px`;
+  car.style.top = `${player.y}px`;
 
   const numEnemies = 3 + level;
 
